@@ -4,11 +4,20 @@
     "confirm": "Confirm",
     "cancel": "Cancel"
   },
+  "unauthorized": {
+    "title": "Login to continue",
+    "description": "To access your information, you need to login.\nWould you like to login?",
+    "button": "Login"
+  },
   "profile": {
     "basic_info": {
       "title": "Basic Info",
       "name": "Name",
-      "email": "Email"
+      "email": "Email",
+      "description": "Name and email cannot be changed"
+    },
+    "settings": {
+      "title": "Settings"
     },
     "notification_settings": {
       "title": "Notification Settings",
@@ -20,15 +29,34 @@
         "title": "Chat Notifications",
         "description": "Receive notifications for chat messages"
       },
-      "event": {
-        "title": "Event Notifications",
-        "description": "Receive notifications for events"
+      "room": {
+        "title": "Join/Leave Notifications",
+        "description": "Receive notifications for changing members"
       }
     },
     "account_number_settings": {
       "title": "Settlement Account Settings",
-      "description": "You can register your account to quickly request settlements.",
-      "button": "Account Settings"
+      "default_account": "Default Account",
+      "no_account": {
+        "description": "By registering a default account, you can request settlements easily and quickly without needing to enter your account each time.",
+        "button": "Register Account"
+      },
+      "has_account": {
+        "change": "Change"
+      },
+      "alert": {
+        "title": "Caution!\nPlease register an account in your name",
+        "description": "If the registered name and account holder differ,\nthere may be confusion in settlements",
+        "next": "Got it"
+      },
+      "select_bank": {
+        "bank": "Bank",
+        "placeholder": "Search for a bank"
+      },
+      "bank_number": {
+        "register": "Register",
+        "placeholder": "Enter your bank number"
+      }
     },
     "account_management": {
       "title": "Account Management",
