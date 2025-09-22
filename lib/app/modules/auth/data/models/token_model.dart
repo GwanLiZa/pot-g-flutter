@@ -5,14 +5,12 @@ part 'token_model.g.dart';
 
 @freezed
 sealed class TokenModel with _$TokenModel {
-  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory TokenModel({
     required String accessToken,
     required String tokenType,
     required int expiresIn,
     required String refreshToken,
     required int refreshTokenExpiresIn,
-    required String idToken,
     required String scope,
   }) = _TokenModel;
 
