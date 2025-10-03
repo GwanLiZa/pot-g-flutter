@@ -1,11 +1,17 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pot_g/app/modules/common/presentation/widgets/date_select.dart';
 import 'package:pot_g/app/modules/common/presentation/widgets/path_select.dart';
 import 'package:pot_g/app/modules/common/presentation/widgets/pot_button.dart';
+import 'package:pot_g/app/modules/core/data/models/pot_model.dart';
+import 'package:pot_g/app/modules/core/data/models/route_model.dart';
+import 'package:pot_g/app/modules/core/domain/entities/pot_entity.dart';
 import 'package:pot_g/app/modules/core/presentation/route_list_bloc.dart';
 import 'package:pot_g/app/modules/create/presentation/bloc/create_cubit.dart';
+import 'package:pot_g/app/modules/create/presentation/bloc/create_pot_bloc.dart';
 import 'package:pot_g/app/modules/create/presentation/widgets/time_interval_selector.dart';
+import 'package:pot_g/app/router.gr.dart';
 import 'package:pot_g/app/values/palette.dart';
 import 'package:pot_g/app/values/text_styles.dart';
 import 'package:pot_g/gen/strings.g.dart';
@@ -38,7 +44,41 @@ class CreateForm extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             child: PotButton(
               onPressed: context.select(
-                (CreateCubit cubit) => cubit.state.valid ? () {} : null,
+                (CreateCubit cubit) =>
+                    cubit.state.valid
+                        ? () {
+                          final state = cubit.state;
+
+                          final pot = PotModel(
+                            id: '',
+                            route: state.route! as RouteModel,
+                            startsAt: DateTime(
+                              state.date!.year,
+                              state.date!.month,
+                              state.date!.day,
+                              state.startTime!.hour,
+                              state.startTime!.minute,
+                              state.startTime!.second,
+                            ),
+                            endsAt: DateTime(
+                              state.date!.year,
+                              state.date!.month,
+                              state.date!.day,
+                              state.endTime!.hour,
+                              state.endTime!.minute,
+                              state.endTime!.second,
+                            ),
+                            current: 1,
+                            total: state.maxCapacity!,
+                          );
+
+                          context.read<CreatePotBloc>().add(
+                            CreatePotEvent.create(potData: pot),
+                          );
+
+                          context.router.push(ListRoute());
+                        }
+                        : null,
               ),
               variant: PotButtonVariant.emphasized,
               child: Text(context.t.create.action),
