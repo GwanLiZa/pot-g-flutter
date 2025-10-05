@@ -5,6 +5,10 @@ targets:
         options:
           explicit_to_json: true
           field_rename: snake
+      freezed:
+        options:
+          when: false
+          union_value_case: snake
 
 global_options:
   json_serializable:
