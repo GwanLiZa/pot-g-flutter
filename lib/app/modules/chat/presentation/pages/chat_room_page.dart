@@ -7,14 +7,16 @@ import 'package:pot_g/app/modules/auth/presentation/bloc/auth_bloc.dart';
 import 'package:pot_g/app/modules/chat/domain/entities/chat_entity.dart';
 import 'package:pot_g/app/modules/chat/presentation/bloc/chat_bloc.dart';
 import 'package:pot_g/app/modules/chat/presentation/widgets/chat_bubble.dart';
+import 'package:pot_g/app/modules/chat/presentation/widgets/pot_info.dart';
+import 'package:pot_g/app/modules/chat/presentation/widgets/pot_users.dart';
 import 'package:pot_g/app/modules/common/presentation/widgets/pot_app_bar.dart';
 import 'package:pot_g/app/modules/common/presentation/widgets/pot_icon_button.dart';
-import 'package:pot_g/app/modules/core/data/models/pot_model.dart';
-import 'package:pot_g/app/modules/core/data/models/route_model.dart';
-import 'package:pot_g/app/modules/core/data/models/stop_model.dart';
+import 'package:pot_g/app/modules/common/presentation/widgets/pot_pressable.dart';
+import 'package:pot_g/app/modules/core/domain/entities/pot_entity.dart';
 import 'package:pot_g/app/values/palette.dart';
 import 'package:pot_g/app/values/text_styles.dart';
 import 'package:pot_g/gen/assets.gen.dart';
+import 'package:pot_g/gen/strings.g.dart';
 
 /// 연속된 요소만 그룹화하는 함수
 /// [list]: 그룹화할 리스트
@@ -53,34 +55,62 @@ List<List<T>> groupConsecutiveBy<T, K>(
 
 @RoutePage()
 class ChatRoomPage extends StatelessWidget {
-  const ChatRoomPage({super.key, required this.id});
+  const ChatRoomPage({super.key, required this.pot});
 
-  final String id;
+  final PotEntity pot;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create:
-          (context) =>
-              sl<ChatBloc>()..add(
-                ChatInit(
-                  PotModel(
-                    id: id,
-                    current: 1,
-                    endsAt: DateTime.now(),
-                    startsAt: DateTime.now(),
-                    route: RouteModel(
-                      id: id,
-                      from: StopModel(id: id, name: ''),
-                      to: StopModel(id: id, name: ''),
-                    ),
-                    total: 4,
-                  ),
-                ),
-              ),
+      create: (context) => sl<ChatBloc>()..add(ChatInit(pot)),
       child: Scaffold(
         appBar: PotAppBar(title: Text('지송 003')),
-        endDrawer: Drawer(),
+        endDrawer: Drawer(
+          child: SafeArea(
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  PotInfo(pot: pot),
+                  const SizedBox(height: 20),
+                  Container(height: 1, color: Palette.borderGrey2),
+                  const SizedBox(height: 20),
+                  PotUsers(pot: pot),
+                  Spacer(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      PotPressable(
+                        onTap: () {},
+                        child: Text(
+                          context.t.chat_room.drawer.actions.leave,
+                          style: TextStyles.caption.copyWith(
+                            color: Palette.grey,
+                            decoration: TextDecoration.underline,
+                            decorationColor: Palette.grey,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      PotPressable(
+                        onTap: () {},
+                        child: Text(
+                          context.t.chat_room.drawer.actions.report,
+                          style: TextStyles.caption.copyWith(
+                            color: Palette.grey,
+                            decoration: TextDecoration.underline,
+                            decorationColor: Palette.grey,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
         body: Column(
           children: [
             Expanded(
