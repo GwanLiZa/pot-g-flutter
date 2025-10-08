@@ -1,21 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pot_g/app/modules/chat/data/enums/pot_status.dart';
 import 'package:pot_g/app/modules/common/presentation/extensions/date_time.dart';
-import 'package:pot_g/app/modules/core/domain/entities/pot_entity.dart';
+import 'package:pot_g/app/modules/core/domain/entities/pot_detail_entity.dart';
 import 'package:pot_g/app/values/palette.dart';
 import 'package:pot_g/app/values/text_styles.dart';
 
 class ChatListItem extends StatelessWidget {
   const ChatListItem({super.key, required this.pot});
 
-  final PotEntity pot;
+  final PotDetailEntity pot;
 
   @override
   Widget build(BuildContext context) {
-    final disabled = pot.current == pot.total;
+    final textColorTitle =
+        pot.status == PotStatus.archived ? Palette.grey : Palette.dark;
+    final textColorDescription =
+        pot.status == PotStatus.archived ? Palette.grey : Palette.textGrey;
 
     return Container(
-      height: 180,
+      height:
+          (pot.status == PotStatus.waitAccounting ||
+                  pot.status == PotStatus.archived)
+              ? 203
+              : 180,
       decoration: BoxDecoration(
         color: Palette.white,
         borderRadius: BorderRadius.all(Radius.circular(11)),
@@ -59,14 +67,14 @@ class ChatListItem extends StatelessWidget {
                           Text(
                             '노선',
                             style: TextStyles.description.copyWith(
-                              color: Palette.dark,
+                              color: textColorTitle,
                             ),
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            '송정역 → 지스트',
+                            '${pot.route.from.name} → ${pot.route.to.name}',
                             style: TextStyles.description.copyWith(
-                              color: Palette.textGrey,
+                              color: textColorDescription,
                             ),
                           ),
                         ],
@@ -77,7 +85,7 @@ class ChatListItem extends StatelessWidget {
                           Text(
                             '날짜',
                             style: TextStyles.description.copyWith(
-                              color: Palette.dark,
+                              color: textColorTitle,
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -87,7 +95,7 @@ class ChatListItem extends StatelessWidget {
                               'ko_KR',
                             ).format(pot.startsAt),
                             style: TextStyles.description.copyWith(
-                              color: Palette.textGrey,
+                              color: textColorDescription,
                             ),
                           ),
                         ],
@@ -98,18 +106,43 @@ class ChatListItem extends StatelessWidget {
                           Text(
                             '시간',
                             style: TextStyles.description.copyWith(
-                              color: Palette.dark,
+                              color: textColorTitle,
                             ),
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            DateFormat.Hm().format(pot.startsAt),
+                            pot.status == PotStatus.beforeConfirmed
+                                ? '${DateFormat.Hm().format(pot.startsAt)}~${DateFormat.Hm().format(pot.endsAt)}'
+                                : DateFormat.Hm().format(pot.startsAt),
                             style: TextStyles.description.copyWith(
-                              color: Palette.textGrey,
+                              color: textColorDescription,
                             ),
                           ),
                         ],
                       ),
+                      if (pot.status == PotStatus.waitAccounting ||
+                          pot.status == PotStatus.archived)
+                        const SizedBox(height: 4),
+                      if (pot.status == PotStatus.waitAccounting ||
+                          pot.status == PotStatus.archived)
+                        Row(
+                          children: [
+                            Text(
+                              '정산',
+                              style: TextStyles.description.copyWith(
+                                color: textColorTitle,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              '${NumberFormat('#,###').format(pot.accountingRequested)}원',
+                              style: TextStyles.description.copyWith(
+                                color: textColorDescription,
+                              ),
+                            ),
+                          ],
+                        ),
+
                       const SizedBox(height: 16),
                     ],
                   ),
@@ -117,27 +150,85 @@ class ChatListItem extends StatelessWidget {
                   Column(
                     children: [
                       const SizedBox(height: 12),
-                      Container(
-                        width: 68,
-                        height: 30,
-                        decoration: BoxDecoration(
-                          color: Palette.primary,
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.check, color: Palette.white, size: 20),
-                            const SizedBox(width: 4),
-                            Text(
-                              '확정',
+                      if (pot.status == PotStatus.confirmed)
+                        Container(
+                          width: 68,
+                          height: 30,
+                          decoration: BoxDecoration(
+                            color: Palette.primary,
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.check, color: Palette.white, size: 20),
+                              const SizedBox(width: 4),
+                              Text(
+                                '확정',
+                                style: TextStyles.description.copyWith(
+                                  color: Palette.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      else if (pot.status == PotStatus.beforeConfirmed)
+                        Container(
+                          width: 65,
+                          height: 30,
+                          decoration: BoxDecoration(
+                            color: Palette.grey,
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Center(
+                            child: Text(
+                              '확정 전',
                               style: TextStyles.description.copyWith(
                                 color: Palette.white,
                               ),
                             ),
-                          ],
+                          ),
+                        )
+                      else if (pot.status == PotStatus.waitAccounting)
+                        Container(
+                          width: 65,
+                          height: 30,
+                          decoration: BoxDecoration(
+                            color: Palette.warning,
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '정산 전',
+                                style: TextStyles.description.copyWith(
+                                  color: Palette.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      else if (pot.status == PotStatus.archived)
+                        Container(
+                          width: 48,
+                          height: 30,
+                          decoration: BoxDecoration(
+                            color: Palette.borderGrey,
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '해산',
+                                style: TextStyles.description.copyWith(
+                                  color: Palette.grey,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
                     ],
                   ),
                 ],
