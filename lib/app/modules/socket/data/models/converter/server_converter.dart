@@ -6,6 +6,17 @@ import 'package:pot_g/app/modules/socket/data/models/events/send_chat_response_m
 import 'package:pot_g/app/modules/socket/data/models/pot_events/chat_v1_event.dart';
 import 'package:pot_g/app/modules/socket/data/models/pot_events/user_in_v1_event.dart';
 
+PotEventModel<E> convertPotEvent<E extends PotEvent>(
+  Map<String, dynamic> jsonData,
+) {
+  final message = convertServerMessage({
+    'type': 'pot_event_receive',
+    'request_id': '',
+    'body': jsonData,
+  });
+  return message.body as PotEventModel<E>;
+}
+
 BaseServerMessageModel<T> convertServerMessage<
   T extends BaseServerMessageEvent
 >(Map<String, dynamic> jsonData) {

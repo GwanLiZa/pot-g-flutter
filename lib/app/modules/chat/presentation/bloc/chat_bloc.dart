@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
@@ -10,7 +12,7 @@ part 'chat_bloc.freezed.dart';
 @injectable
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final ChatRepository _chatRepository;
-  late final PotInfoEntity _pot;
+  late PotInfoEntity _pot;
 
   ChatBloc(this._chatRepository) : super(const ChatInitial()) {
     on<ChatInit>(_onChatInit);
@@ -21,12 +23,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     emit(const ChatState.loading());
     _pot = event.pot;
     try {
-      final chats = await _chatRepository.getChats(event.pot);
-      emit(ChatState.loaded(chats));
+      final chats = await _chatRepository.getChats(_pot);
+      emit(ChatState.loaded(chats.reversed.toList()));
       return emit.forEach(
-        _chatRepository.getChatsStream(event.pot),
+        _chatRepository.getChatsStream(_pot),
         onData: (chat) {
-          return ChatState.loaded([...state.chats, chat]);
+          return ChatState.loaded([chat, ...state.chats]);
         },
       );
     } catch (e) {
