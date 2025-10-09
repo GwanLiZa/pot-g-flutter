@@ -6,10 +6,10 @@ part 'create_pot_model.g.dart';
 @freezed
 sealed class CreatePotModel with _$CreatePotModel {
   const factory CreatePotModel({
-    @JsonKey(name: 'route_id') required String routeId,
-    @JsonKey(name: 'starts_at') required DateTime startsAt,
-    @JsonKey(name: 'ends_at') required DateTime endsAt,
-    @JsonKey(name: 'max_count') required int maxCount,
+    required String routeId,
+    required DateTime startsAt,
+    required DateTime endsAt,
+    required int maxCount,
   }) = _CreatePotModel;
 
   factory CreatePotModel.fromJson(Map<String, dynamic> json) =>
