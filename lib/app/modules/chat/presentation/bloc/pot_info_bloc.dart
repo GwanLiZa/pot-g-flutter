@@ -15,6 +15,7 @@ class PotInfoBloc extends Bloc<PotInfoEvent, PotInfoState> {
   PotInfoBloc(this._repository) : super(const PotInfoState.loading()) {
     on<_Init>(_onInit);
     on<_SetDepartureTime>(_onSetDepartureTime);
+    on<_LeavePot>(_onLeavePot);
     on<_KickUser>(_onKickUser);
   }
 
@@ -38,6 +39,15 @@ class PotInfoBloc extends Bloc<PotInfoEvent, PotInfoState> {
     }
   }
 
+  Future<void> _onLeavePot(_LeavePot event, Emitter<PotInfoState> emit) async {
+    if (state.pot == null) return;
+    try {
+      await _repository.leavePot(state.pot!);
+    } catch (e) {
+      emit(PotInfoState.error(e.toString()));
+    }
+  }
+
   Future<void> _onKickUser(_KickUser event, Emitter<PotInfoState> emit) async {
     if (state.pot == null) return;
     try {
@@ -53,6 +63,7 @@ sealed class PotInfoEvent with _$PotInfoEvent {
   const factory PotInfoEvent.init(PotDetailEntity pot) = _Init;
   const factory PotInfoEvent.setDepartureTime(DateTime date) =
       _SetDepartureTime;
+  const factory PotInfoEvent.leavePot() = _LeavePot;
   const factory PotInfoEvent.kickUser(PotUserEntity user) = _KickUser;
 }
 

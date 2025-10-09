@@ -4,6 +4,7 @@ import 'package:pot_g/app/modules/chat/data/models/confirm_departure_time_reques
 import 'package:pot_g/app/modules/chat/data/models/confirm_departure_time_response_model.dart';
 import 'package:pot_g/app/modules/chat/data/models/get_pot_events_query_model.dart';
 import 'package:pot_g/app/modules/chat/data/models/kick_user_response_model.dart';
+import 'package:pot_g/app/modules/chat/data/models/leave_pot_response_model.dart';
 import 'package:pot_g/app/modules/chat/data/models/pot_events_model.dart';
 import 'package:pot_g/app/modules/chat/data/models/pot_info_model.dart';
 import 'package:pot_g/app/modules/core/data/dio/pot_dio.dart';
@@ -31,6 +32,9 @@ abstract class ChatPotApi {
     @Path('id') String id,
     @Field("user_pk") String userPk,
   );
+
+  @POST('{id}/out')
+  Future<LeavePotResponseModel> leavePot(@Path('id') String id);
 
   @POST('{id}/departure/confirm')
   Future<ConfirmDepartureTimeResponseModel> confirmDepartureTime(
