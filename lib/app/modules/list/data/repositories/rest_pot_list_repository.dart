@@ -14,7 +14,7 @@ class RestPotListRepository implements PotListRepository {
   RestPotListRepository(this._api);
 
   @override
-  Future<List<PotEntity>> getPotList({
+  Future<List<PotSummaryEntity>> getPotList({
     DateTime? date,
     RouteEntity? route,
   }) async {

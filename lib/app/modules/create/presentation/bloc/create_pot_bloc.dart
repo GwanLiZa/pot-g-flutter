@@ -37,7 +37,8 @@ class CreatePotBloc extends Bloc<CreatePotEvent, CreatePotState> {
 
 @freezed
 sealed class CreatePotEvent with _$CreatePotEvent {
-  const factory CreatePotEvent.create({required PotEntity potData}) = _Create;
+  const factory CreatePotEvent.create({required PotSummaryEntity potData}) =
+      _Create;
 }
 
 @freezed
