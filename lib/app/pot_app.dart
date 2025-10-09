@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:pot_g/app/di/locator.dart';
 import 'package:pot_g/app/modules/auth/presentation/bloc/auth_bloc.dart';
+import 'package:pot_g/app/modules/core/presentation/bloc/link_bloc.dart';
+import 'package:pot_g/app/modules/core/presentation/bloc/messaging_bloc.dart';
 import 'package:pot_g/app/modules/core/presentation/route_list_bloc.dart';
 import 'package:pot_g/app/modules/socket/presentation/bloc/socket_auth_bloc.dart';
 import 'package:pot_g/app/router.dart';
@@ -50,6 +52,14 @@ class _Providers extends StatelessWidget {
           create: (_) => sl<RouteListBloc>()..add(RouteListEvent.search()),
         ),
         BlocProvider(create: (_) => sl<SocketAuthBloc>()),
+        BlocProvider(
+          lazy: false,
+          create: (_) => sl<MessagingBloc>()..add(const MessagingEvent.init()),
+        ),
+        BlocProvider(
+          lazy: false,
+          create: (_) => sl<LinkBloc>()..add(const LinkEvent.init()),
+        ),
       ],
       child: MultiBlocListener(
         listeners: [
@@ -64,6 +74,28 @@ class _Providers extends StatelessWidget {
                 context.read<SocketAuthBloc>().add(event);
               }
             },
+          ),
+          BlocListener<AuthBloc, AuthState>(
+            listenWhen:
+                (previous, current) =>
+                    current.mapOrNull(
+                      authenticated: (_) => true,
+                      unauthenticated: (_) => true,
+                    ) ??
+                    false,
+            listener:
+                (context, state) => context.read<MessagingBloc>().add(
+                  const MessagingEvent.refresh(),
+                ),
+          ),
+          BlocListener<LinkBloc, LinkState>(
+            listener:
+                (context, state) => state.mapOrNull(
+                  loaded:
+                      (s) => WidgetsBinding.instance.addPostFrameCallback((_) {
+                        _appRouter.pushPath(s.link);
+                      }),
+                ),
           ),
         ],
         child: child,
