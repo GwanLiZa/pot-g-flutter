@@ -147,7 +147,7 @@ class FcmMessagingRepository implements MessagingRepository, LinkRepository {
     final os = Platform.isAndroid ? 'AOS' : 'iOS';
     //final packageInfo = await PackageInfo.fromPlatform();
     //final version = packageInfo.version;
-    //TO DO : package_info_plus가 호환 안됨 추후 수정 필요
+    // TODO: package_info_plus가 호환 안됨 추후 수정 필요
     final request = FcmRequestModel(
       fcmToken: fcmToken,
       os: os,
