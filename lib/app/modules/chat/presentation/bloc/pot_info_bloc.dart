@@ -4,7 +4,7 @@ import 'package:injectable/injectable.dart';
 import 'package:pot_g/app/modules/chat/domain/entities/pot_info_entity.dart';
 import 'package:pot_g/app/modules/chat/domain/entities/pot_user_entity.dart';
 import 'package:pot_g/app/modules/chat/domain/repositories/pot_info_repository.dart';
-import 'package:pot_g/app/modules/core/domain/entities/pot_detail_entity.dart';
+import 'package:pot_g/app/modules/core/domain/entities/pot_id_entity.dart';
 
 part 'pot_info_bloc.freezed.dart';
 
@@ -17,6 +17,7 @@ class PotInfoBloc extends Bloc<PotInfoEvent, PotInfoState> {
     on<_SetDepartureTime>(_onSetDepartureTime);
     on<_LeavePot>(_onLeavePot);
     on<_KickUser>(_onKickUser);
+    on<_Accounting>(_onAccounting);
   }
 
   Future<void> _onInit(_Init event, Emitter<PotInfoState> emit) async {
@@ -56,15 +57,36 @@ class PotInfoBloc extends Bloc<PotInfoEvent, PotInfoState> {
       emit(PotInfoState.error(e.toString()));
     }
   }
+
+  Future<void> _onAccounting(
+    _Accounting event,
+    Emitter<PotInfoState> emit,
+  ) async {
+    if (state.pot == null) return;
+    final pot = state.pot!;
+    try {
+      emit(const PotInfoState.loading());
+      await _repository.accounting(pot, event.amount, event.targets);
+      emit(const PotInfoState.accountingSuccess());
+    } catch (e) {
+      emit(PotInfoState.error(e.toString()));
+    } finally {
+      emit(PotInfoState.loaded(pot));
+    }
+  }
 }
 
 @freezed
 sealed class PotInfoEvent with _$PotInfoEvent {
-  const factory PotInfoEvent.init(PotDetailEntity pot) = _Init;
+  const factory PotInfoEvent.init(PotIdEntity pot) = _Init;
   const factory PotInfoEvent.setDepartureTime(DateTime date) =
       _SetDepartureTime;
   const factory PotInfoEvent.leavePot() = _LeavePot;
   const factory PotInfoEvent.kickUser(PotUserEntity user) = _KickUser;
+  const factory PotInfoEvent.accounting(
+    int amount,
+    List<PotUserEntity> targets,
+  ) = _Accounting;
 }
 
 @freezed
@@ -72,6 +94,7 @@ sealed class PotInfoState with _$PotInfoState {
   const PotInfoState._();
   const factory PotInfoState.loading() = _Loading;
   const factory PotInfoState.loaded(PotInfoEntity pot) = _Loaded;
+  const factory PotInfoState.accountingSuccess() = AccountingSuccess;
   const factory PotInfoState.error(String message) = _Error;
 
   PotInfoEntity? get pot => switch (this) {

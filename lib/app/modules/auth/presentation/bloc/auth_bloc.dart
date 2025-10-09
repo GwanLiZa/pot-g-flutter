@@ -15,6 +15,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<_Load>(_onLoad);
     on<_Login>(_onLogin);
     on<_Logout>(_onLogout);
+    on<_Update>(_onUpdate);
   }
 
   Future<void> _onLoad(AuthEvent event, Emitter<AuthState> emit) async {
@@ -47,8 +48,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     await _repository.signOut();
   }
 
-  static SelfUserEntity? userOf(BuildContext context) =>
-      context.read<AuthBloc>().state.user;
+  Future<void> _onUpdate(AuthEvent event, Emitter<AuthState> emit) async {
+    await _repository.update();
+  }
+
+  static SelfUserEntity? userOf(BuildContext context, [bool watch = false]) =>
+      watch
+          ? context.watch<AuthBloc>().state.user
+          : context.read<AuthBloc>().state.user;
 }
 
 @freezed
@@ -56,6 +63,7 @@ sealed class AuthEvent with _$AuthEvent {
   const factory AuthEvent.load() = _Load;
   const factory AuthEvent.login() = _Login;
   const factory AuthEvent.logout() = _Logout;
+  const factory AuthEvent.update() = _Update;
 }
 
 @freezed
