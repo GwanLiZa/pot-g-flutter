@@ -76,8 +76,6 @@ class CreateForm extends StatelessWidget {
                             CreatePotEvent.create(potData: pot),
                           );
 
-                          // DO DO
-
                           context.router.push(ListRoute());
                         }
                         : null,
