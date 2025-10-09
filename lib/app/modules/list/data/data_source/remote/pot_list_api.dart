@@ -1,15 +1,20 @@
 import 'package:dio/dio.dart';
+import 'package:injectable/injectable.dart';
 import 'package:pot_g/app/modules/core/data/dio/pot_dio.dart';
+import 'package:pot_g/app/modules/core/data/models/pot_model.dart';
+import 'package:pot_g/app/modules/list/data/model/pot_list_model.dart';
 import 'package:retrofit/retrofit.dart';
 
 part 'pot_list_api.g.dart';
 
-@RestApi(baseUrl: '/api/v1/explore/')
+@injectable
+@RestApi(baseUrl: '/api/v1/discovery/')
 abstract class PotListApi {
+  @factoryMethod
   factory PotListApi(PotDio dio) = _PotListApi;
 
   @GET('list')
-  Future getList();
+  Future<PotListModel> getList();
 
   @GET('route')
   Future getRouteList();

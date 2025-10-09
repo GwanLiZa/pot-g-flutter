@@ -129,6 +129,27 @@
     }
   },
   "chat_room": {
+    "system_messages": {
+      "user_in": {
+        "description": "$user joined the pot."
+      },
+      "user_leave": {
+        "description": "$user left the pot."
+      },
+      "user_kicked": {
+        "description": "$user was kicked from the pot."
+      }
+    },
+    "fofo": {
+      "name": "Notification",
+      "actions": {
+        "departure_confirm": "Departure Confirm",
+        "taxi_call": "Taxi Call",
+        "accounting_request": "Accounting Request",
+        "accounting_info_check": "Accounting Info Check",
+        "accounting_process": "Accounting Process"
+      }
+    },
     "drawer": {
       "pot_info": {
         "route_info": "Route Info",
@@ -157,6 +178,34 @@
       },
       "host_only": {
         "description": "This feature is only available for hosts."
+      }
+    },
+    "accounting": {
+      "host_only": {
+        "description": "This feature is only available for hosts."
+      },
+      "dutch": {
+        "title": "Dutch Pay",
+        "fields": {
+          "amount": {
+            "label": "Amount",
+            "value": "$n Won"
+          },
+          "account_not_registered": {
+            "label": "Register your default account.",
+            "description": "You haven't registered a default account yet.\nYou need to register a default account to request settlements.",
+            "action": "Register Account"
+          },
+          "account": {
+            "label": "Settlement Account",
+            "description": "You will request settlement using your registered default account.",
+            "action": "Change"
+          },
+          "target": {
+            "label": "Settlement Target"
+          }
+        },
+        "action": "Request Dutch Pay"
       }
     }
   }

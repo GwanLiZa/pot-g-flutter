@@ -13,7 +13,11 @@ class MockRouteListRepository extends RouteListRepository {
   @override
   Future<List<RouteEntity>> getRouteList() async {
     return [
-      RouteModel(id: '1', from: _gist, to: _station),
+      RouteModel(
+        id: '550e8400-e29b-41d4-a716-446655440003',
+        from: _gist,
+        to: _station,
+      ),
       RouteModel(id: '2', from: _gist, to: _uSquare),
       RouteModel(id: '3', from: _station, to: _gist),
       RouteModel(id: '4', from: _uSquare, to: _gist),

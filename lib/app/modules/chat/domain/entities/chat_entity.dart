@@ -1,17 +1,25 @@
 import 'package:pot_g/app/modules/chat/domain/entities/pot_user_entity.dart';
+import 'package:pot_g/app/modules/chat/domain/enums/fofo_action_button_type.dart';
+import 'package:pot_g/app/modules/chat/domain/enums/fofo_chat_type.dart';
 
-class ChatEntity {
-  final String message;
-  final PotUserEntity user;
-  final DateTime createdAt;
+sealed class Sendable {
+  DateTime get createdAt;
+}
 
-  const ChatEntity({
-    required this.message,
-    required this.user,
-    required this.createdAt,
-  });
+abstract class ChatEntity implements Sendable {
+  String get message;
+  PotUserEntity get user;
+}
 
-  static ChatEntity make(String message, PotUserEntity user) {
-    return ChatEntity(message: message, user: user, createdAt: DateTime.now());
-  }
+enum SystemMessageType { userIn, userLeave, userKicked }
+
+abstract class SystemMessageEntity implements Sendable {
+  SystemMessageType get type;
+  PotUserEntity get relatedUser;
+}
+
+abstract class FofoChatEntity implements Sendable {
+  FofoChatType get type;
+  String get content;
+  List<FofoActionButtonType> get actionButtons;
 }
