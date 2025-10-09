@@ -12,7 +12,7 @@ abstract class PotDetailEntity extends PotSummaryEntity {
     required this.name,
     this.departureTime,
     required this.status,
-    this.accountingRequested,
+    this.accountingRequested = 0,
   });
 
   final String name;
