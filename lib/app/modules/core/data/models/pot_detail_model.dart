@@ -14,11 +14,11 @@ sealed class PotDetailModel with _$PotDetailModel implements PotDetailEntity {
     required RouteModel route,
     required DateTime startsAt,
     required DateTime endsAt,
-    required DateTime departureTime,
+    DateTime? departureTime,
     required int current,
     required int total,
     required PotStatus status,
-    required int accountingRequested,
+    int? accountingRequested,
   }) = _PotDetailModel;
 
   factory PotDetailModel.fromJson(Map<String, dynamic> json) =>
