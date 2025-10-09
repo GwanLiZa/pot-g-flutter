@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pot_g/app/modules/common/presentation/widgets/date_select.dart';
 import 'package:pot_g/app/modules/common/presentation/widgets/path_select.dart';
-import 'package:pot_g/app/modules/core/presentation/route_list_bloc.dart';
+import 'package:pot_g/app/modules/core/presentation/bloc/route_list_bloc.dart';
 import 'package:pot_g/app/modules/list/presentation/bloc/list_cubit.dart';
 
 class ListFilter extends StatelessWidget {
