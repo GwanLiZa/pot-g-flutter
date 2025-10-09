@@ -10,13 +10,13 @@ abstract class PotDetailEntity extends PotSummaryEntity {
     required super.current,
     required super.total,
     required this.name,
-    required this.departureTime,
+    this.departureTime,
     required this.status,
-    required this.accountingRequested,
+    this.accountingRequested,
   });
 
   final String name;
-  final DateTime departureTime;
+  final DateTime? departureTime;
   final PotStatus status;
-  final int accountingRequested;
+  final int? accountingRequested;
 }
