@@ -29,28 +29,26 @@ class ChatPage extends StatelessWidget {
               sl<PotDetailBloc>()..add(const PotDetailEvent.loadMyPots()),
       child: Scaffold(
         appBar: PotAppBar(title: Text(context.t.chat.title)),
-        body: SafeArea(
-          child: BlocBuilder<PotDetailBloc, PotDetailState>(
-            builder: (context, state) {
-              if (state.isLoading) {
-                return const Center(child: CircularProgressIndicator());
-              }
+        body: BlocBuilder<PotDetailBloc, PotDetailState>(
+          builder: (context, state) {
+            if (state.isLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-              if (state.error != null) {
-                return Center(child: Text('Error: ${state.error}'));
-              }
+            if (state.error != null) {
+              return Center(child: Text('Error: ${state.error}'));
+            }
 
-              return Positioned.fill(
-                child: Container(
-                  color: Palette.lightGrey,
-                  child: _ChatListView(
-                    activePots: state.activePotList,
-                    closedPots: state.archivedPotList,
-                  ),
+            return Container(
+              color: Palette.lightGrey,
+              child: SafeArea(
+                child: _ChatListView(
+                  activePots: state.activePotList,
+                  closedPots: state.archivedPotList,
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          },
         ),
       ),
     );
