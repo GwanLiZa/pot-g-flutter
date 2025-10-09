@@ -17,13 +17,13 @@ class CreatePotBloc extends Bloc<CreatePotEvent, CreatePotState> {
   Future<void> _onCreate(_Create event, Emitter<CreatePotState> emit) async {
     emit(state.copyWith(isLoading: true, error: null));
     try {
-      await _repository.createPot(
+      final potId = await _repository.createPot(
         routeId: event.potData.route.id,
         startsAt: event.potData.startsAt,
         endsAt: event.potData.endsAt,
         maxCount: event.potData.total,
       );
-      emit(state.copyWith(isLoading: false));
+      emit(state.copyWith(isLoading: false, createdPotId: potId));
     } catch (e) {
       emit(state.copyWith(isLoading: false, error: e.toString()));
     }
@@ -40,5 +40,6 @@ sealed class CreatePotState with _$CreatePotState {
   const factory CreatePotState({
     @Default(false) bool isLoading,
     String? error,
+    String? createdPotId,
   }) = _State;
 }
