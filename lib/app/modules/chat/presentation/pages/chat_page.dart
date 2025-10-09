@@ -40,18 +40,14 @@ class ChatPage extends StatelessWidget {
                 return Center(child: Text('Error: ${state.error}'));
               }
 
-              return Stack(
-                children: [
-                  Positioned.fill(
-                    child: Container(
-                      color: Palette.lightGrey,
-                      child: _ChatListView(
-                        activePots: state.activePotList,
-                        closedPots: state.archivedPotList,
-                      ),
-                    ),
+              return Positioned.fill(
+                child: Container(
+                  color: Palette.lightGrey,
+                  child: _ChatListView(
+                    activePots: state.activePotList,
+                    closedPots: state.archivedPotList,
                   ),
-                ],
+                ),
               );
             },
           ),
