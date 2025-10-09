@@ -58,7 +58,7 @@ class CreateForm extends StatelessWidget {
                               state.date!.day,
                               state.startTime!.hour,
                               state.startTime!.minute,
-                              state.startTime!.second,
+                              0,
                             ),
                             endsAt: DateTime(
                               state.date!.year,
@@ -66,7 +66,7 @@ class CreateForm extends StatelessWidget {
                               state.date!.day,
                               state.endTime!.hour,
                               state.endTime!.minute,
-                              state.endTime!.second,
+                              0,
                             ),
                             current: 1,
                             total: state.maxCapacity!,
@@ -75,6 +75,8 @@ class CreateForm extends StatelessWidget {
                           context.read<CreatePotBloc>().add(
                             CreatePotEvent.create(potData: pot),
                           );
+
+                          // DO DO
 
                           context.router.push(ListRoute());
                         }
