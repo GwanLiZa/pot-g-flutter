@@ -1,4 +1,4 @@
-import 'package:dio/dio.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:injectable/injectable.dart';
 
@@ -8,5 +8,5 @@ abstract class Module {
     aOptions: AndroidOptions(encryptedSharedPreferences: true),
   );
 
-  Dio get dio => Dio(BaseOptions(baseUrl: 'https://api.pot-g.gistory.me/'));
+  DeviceInfoPlugin get deviceInfoPlugin => DeviceInfoPlugin();
 }

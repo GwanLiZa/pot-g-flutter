@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:pot_g/app/modules/common/presentation/widgets/pot_pressable.dart';
 import 'package:pot_g/app/values/palette.dart';
 import 'package:pot_g/app/values/text_styles.dart';
 
 enum PotButtonVariant { emphasized, outlined }
 
-enum PotButtonSize { small, medium, large }
+enum PotButtonSize { tiny, small, medium, large }
 
-class PotButton extends StatefulWidget {
+class PotButton extends StatelessWidget {
   const PotButton({
     super.key,
     this.padding,
@@ -26,74 +26,86 @@ class PotButton extends StatefulWidget {
   final Widget? prefixIcon;
 
   @override
-  State<PotButton> createState() => _PotButtonState();
+  Widget build(BuildContext context) {
+    return PotPressable(
+      onTap: onPressed,
+      builder:
+          (pressed) => _Inner(
+            pressed: pressed,
+            padding: padding,
+            prefixIcon: prefixIcon,
+            size: size,
+            variant: variant,
+            onPressed: onPressed,
+            child: child,
+          ),
+    );
+  }
 }
 
-class _PotButtonState extends State<PotButton> {
-  bool _pressed = false;
-  bool _active = false;
-  bool get pressed => _pressed || _active;
+class _Inner extends StatelessWidget {
+  const _Inner({
+    required this.pressed,
+    required this.padding,
+    required this.prefixIcon,
+    required this.child,
+    required this.size,
+    required this.variant,
+    required this.onPressed,
+  });
 
   static const _animationDuration = Duration(milliseconds: 50);
-  static const _minPressedDuration = Duration(milliseconds: 80);
+
+  final bool pressed;
+  final EdgeInsetsGeometry? padding;
+  final Widget? prefixIcon;
+  final Widget? child;
+  final PotButtonSize size;
+  final PotButtonVariant? variant;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: widget.onPressed,
-      onTapDown: (_) {
-        if (widget.onPressed == null) return;
-        HapticFeedback.lightImpact();
-        setState(() {
-          _pressed = true;
-          _active = true;
-        });
-        Future.delayed(_minPressedDuration, () {
-          if (!mounted) return;
-          setState(() => _active = false);
-        });
-      },
-      onTapUp: (_) => setState(() => _pressed = false),
-      onTapCancel: () => setState(() => _pressed = false),
-      child: DefaultTextStyle.merge(
-        style: _getTextStyle().copyWith(color: _getTextColor()),
-        child: AnimatedContainer(
-          curve: Curves.easeInOut,
-          duration: _animationDuration,
-          padding: widget.padding ?? _getPadding(),
-          decoration: BoxDecoration(
-            borderRadius: _getBorderRadius(),
-            border: _getBorder(),
-            color: _getBackgroundColor(),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (widget.prefixIcon != null) ...[
-                widget.prefixIcon!,
-                SizedBox(width: _getIconGap()),
-              ],
-              if (widget.child != null) widget.child!,
+    return DefaultTextStyle.merge(
+      style: _getTextStyle().copyWith(color: _getTextColor()),
+      child: AnimatedContainer(
+        curve: Curves.easeInOut,
+        duration: _animationDuration,
+        padding: padding ?? _getPadding(),
+        decoration: BoxDecoration(
+          borderRadius: _getBorderRadius(),
+          border: _getBorder(),
+          color: _getBackgroundColor(),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (prefixIcon != null) ...[
+              prefixIcon!,
+              SizedBox(width: _getIconGap()),
             ],
-          ),
+            if (child != null) child!,
+          ],
         ),
       ),
     );
   }
 
   BorderRadiusGeometry _getBorderRadius() {
-    switch (widget.size) {
+    switch (size) {
       case PotButtonSize.large:
       case PotButtonSize.medium:
         return BorderRadius.all(Radius.circular(10));
       case PotButtonSize.small:
         return BorderRadius.all(Radius.circular(5));
+      case PotButtonSize.tiny:
+        return BorderRadius.all(Radius.circular(4));
     }
   }
 
   BoxBorder? _getBorder() {
-    if (widget.onPressed == null) return null;
-    switch (widget.variant) {
+    if (onPressed == null) return null;
+    switch (variant) {
       case PotButtonVariant.outlined:
         return Border.all(color: Palette.primary, width: 1.5);
       case null:
@@ -104,19 +116,21 @@ class _PotButtonState extends State<PotButton> {
   }
 
   EdgeInsetsGeometry _getPadding() {
-    switch (widget.size) {
+    switch (size) {
       case PotButtonSize.large:
         return const EdgeInsets.symmetric(horizontal: 20, vertical: 15);
       case PotButtonSize.medium:
         return const EdgeInsets.symmetric(horizontal: 25, vertical: 10);
       case PotButtonSize.small:
         return const EdgeInsets.symmetric(horizontal: 15, vertical: 7);
+      case PotButtonSize.tiny:
+        return const EdgeInsets.symmetric(horizontal: 8, vertical: 4);
     }
   }
 
   Color _getBackgroundColor() {
-    if (widget.onPressed == null) return Palette.borderGrey;
-    switch (widget.variant) {
+    if (onPressed == null) return Palette.borderGrey;
+    switch (variant) {
       case PotButtonVariant.emphasized:
         if (pressed) return const Color(0xff346405);
         return Palette.primary;
@@ -130,17 +144,19 @@ class _PotButtonState extends State<PotButton> {
   }
 
   TextStyle _getTextStyle() {
-    switch (widget.size) {
+    switch (size) {
       case PotButtonSize.large:
         return TextStyles.title3;
+      case PotButtonSize.tiny:
+        return TextStyles.description;
       default:
         return TextStyles.title4;
     }
   }
 
   Color _getTextColor() {
-    if (widget.onPressed == null) return Palette.grey;
-    switch (widget.variant) {
+    if (onPressed == null) return Palette.grey;
+    switch (variant) {
       case PotButtonVariant.emphasized:
         return Palette.primaryLight;
       case PotButtonVariant.outlined:
@@ -151,7 +167,7 @@ class _PotButtonState extends State<PotButton> {
   }
 
   double _getIconGap() {
-    switch (widget.size) {
+    switch (size) {
       case PotButtonSize.large:
         return 8;
       default:

@@ -1,8 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
-import 'package:pot_g/app/modules/auth/domain/entity/user_entity.dart';
 import 'package:pot_g/app/modules/auth/domain/repositories/auth_repository.dart';
+import 'package:pot_g/app/modules/user/domain/entities/self_user_entity.dart';
 
 part 'auth_bloc.freezed.dart';
 
@@ -45,6 +46,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(const AuthState.unauthenticated());
     await _repository.signOut();
   }
+
+  static SelfUserEntity? userOf(BuildContext context) =>
+      context.read<AuthBloc>().state.user;
 }
 
 @freezed
@@ -56,9 +60,16 @@ sealed class AuthEvent with _$AuthEvent {
 
 @freezed
 sealed class AuthState with _$AuthState {
+  const AuthState._();
+
   const factory AuthState.initial() = AuthInitial;
   const factory AuthState.loading() = AuthLoading;
   const factory AuthState.unauthenticated() = Unauthenticated;
-  const factory AuthState.authenticated(UserEntity user) = Authenticated;
+  const factory AuthState.authenticated(SelfUserEntity user) = Authenticated;
   const factory AuthState.error(String message) = AuthError;
+
+  SelfUserEntity? get user => switch (this) {
+    Authenticated(:final user) => user,
+    _ => null,
+  };
 }

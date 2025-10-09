@@ -53,6 +53,7 @@ jobs:
         with:
           java-version: "17"
           distribution: "temurin"
+          cache: "gradle"
 
       - uses: ruby/setup-ruby@v1
         with:
@@ -62,7 +63,7 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.32.0"
+          flutter-version: "3.35.2"
           channel: "stable"
           cache: true
       - uses: actions/cache@v4

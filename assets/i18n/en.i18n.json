@@ -1,10 +1,23 @@
 {
   "name": "PotG",
+  "common": {
+    "confirm": "Confirm",
+    "cancel": "Cancel"
+  },
+  "unauthorized": {
+    "title": "Login to continue",
+    "description": "To access your information, you need to login.\nWould you like to login?",
+    "button": "Login"
+  },
   "profile": {
     "basic_info": {
       "title": "Basic Info",
       "name": "Name",
-      "email": "Email"
+      "email": "Email",
+      "description": "Name and email cannot be changed"
+    },
+    "settings": {
+      "title": "Settings"
     },
     "notification_settings": {
       "title": "Notification Settings",
@@ -16,15 +29,34 @@
         "title": "Chat Notifications",
         "description": "Receive notifications for chat messages"
       },
-      "event": {
-        "title": "Event Notifications",
-        "description": "Receive notifications for events"
+      "room": {
+        "title": "Join/Leave Notifications",
+        "description": "Receive notifications for changing members"
       }
     },
     "account_number_settings": {
       "title": "Settlement Account Settings",
-      "description": "You can register your account to quickly request settlements.",
-      "button": "Account Settings"
+      "default_account": "Default Account",
+      "no_account": {
+        "description": "By registering a default account, you can request settlements easily and quickly without needing to enter your account each time.",
+        "button": "Register Account"
+      },
+      "has_account": {
+        "change": "Change"
+      },
+      "alert": {
+        "title": "Caution!\nPlease register an account in your name",
+        "description": "If the registered name and account holder differ,\nthere may be confusion in settlements",
+        "next": "Got it"
+      },
+      "select_bank": {
+        "bank": "Bank",
+        "placeholder": "Search for a bank"
+      },
+      "bank_number": {
+        "register": "Register",
+        "placeholder": "Enter your bank number"
+      }
     },
     "account_management": {
       "title": "Account Management",
@@ -32,6 +64,99 @@
       "withdraw": "Withdraw",
       "logout_dialog": {
         "description": "Are you sure you want to logout?"
+      }
+    }
+  },
+  "list": {
+    "title": "Search",
+    "empty": {
+      "description": "There is no pot\nthat matches the conditions",
+      "button": "Create New Pot"
+    },
+    "filters": {
+      "date": {
+        "all": "All Dates",
+        "select": "Select"
+      },
+      "route": {
+        "all": "All Routes"
+      }
+    },
+    "reached_all": "You have reached all pots"
+  },
+  "create": {
+    "menu_title": "Create",
+    "title": "Create New Pot",
+    "action": "Create New Pot",
+    "info": {
+      "title": "Taxi Pot Information",
+      "fields": {
+        "route": {
+          "label": "Route",
+          "placeholder": "Select Route"
+        },
+        "date": {
+          "label": "Date",
+          "placeholder": "Select Date"
+        }
+      }
+    },
+    "capacity": {
+      "title": "Taxi Pot Maximum Capacity",
+      "description": "The maximum number of people who can join the pot",
+      "fields": {
+        "max_capacity": {
+          "item": {
+            "one": "$n person",
+            "other": "$n people"
+          }
+        }
+      }
+    },
+    "time_interval": {
+      "title": "Taxi Pot Departure Time Interval",
+      "description": "Set the earliest and latest possible departure times",
+      "fields": {
+        "start_time": {
+          "from": "From",
+          "input_first": "false"
+        },
+        "end_time": {
+          "to": "To",
+          "input_first": "false"
+        }
+      }
+    }
+  },
+  "chat_room": {
+    "drawer": {
+      "pot_info": {
+        "route_info": "Route Info",
+        "departure_date": "Departure Date",
+        "departure_time": "Departure Time"
+      },
+      "members": {
+        "my": "my",
+        "passenger": "passengers",
+        "kick": "Kick",
+        "invite": "Invite",
+        "host": "Host"
+      },
+      "actions": {
+        "leave": "Leave",
+        "report": "Report"
+      }
+    },
+    "set_departure_time": {
+      "clock": {
+        "title": "Set Departure Time"
+      },
+      "confirm": {
+        "title": "Confirm the departure time",
+        "description": "Please confirm the departure time for the $route Station taxi pot at $time. Once the time is confirmed, you cannot change the departure time, party members, or other details."
+      },
+      "host_only": {
+        "description": "This feature is only available for hosts."
       }
     }
   }
