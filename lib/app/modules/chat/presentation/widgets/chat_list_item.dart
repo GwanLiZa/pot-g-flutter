@@ -90,10 +90,7 @@ class ChatListItem extends StatelessWidget {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            DateFormat(
-                              'yyyy년 MM월 dd일 E요일',
-                              'ko_KR',
-                            ).format(pot.startsAt),
+                            DateFormat.yMd().add_E().format(pot.startsAt),
                             style: TextStyles.description.copyWith(
                               color: textColorDescription,
                             ),
