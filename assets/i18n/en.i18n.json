@@ -140,6 +140,16 @@
         "description": "$user was kicked from the pot."
       }
     },
+    "fofo": {
+      "name": "Notification",
+      "actions": {
+        "departure_confirm": "Departure Confirm",
+        "taxi_call": "Taxi Call",
+        "accounting_request": "Accounting Request",
+        "accounting_info_check": "Accounting Info Check",
+        "accounting_process": "Accounting Process"
+      }
+    },
     "drawer": {
       "pot_info": {
         "route_info": "Route Info",
