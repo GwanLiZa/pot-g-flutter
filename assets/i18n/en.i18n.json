@@ -164,6 +164,12 @@
       "unknown_action_alert": {
         "title": "Unknown Action",
         "description": "This action is not available. Please update the app."
+      },
+      "accounting": {
+        "not_requested": {
+          "title": "Not Requested",
+          "description": "You don't have to send money"
+        }
       }
     },
     "drawer": {
@@ -171,6 +177,18 @@
         "route_info": "Route Info",
         "departure_date": "Departure Date",
         "departure_time": "Departure Time"
+      },
+      "accounting": {
+        "amount": "Accounting Amount",
+        "status_title": "Accounting Status",
+        "status": {
+          "before": "Accounting",
+          "payer": "Payer",
+          "done": "Done",
+          "not_requested": "Not Requested"
+        },
+        "edit_payer_only": "Accounting status can only be edited by the payer",
+        "save": "Save"
       },
       "members": {
         "my": "my",

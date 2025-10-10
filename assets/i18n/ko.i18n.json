@@ -161,6 +161,12 @@
       "unknown_action_alert": {
         "title": "알 수 없는 액션",
         "description": "이 액션은 사용할 수 없습니다. 앱을 업데이트해주세요."
+      },
+      "accounting": {
+        "not_requested": {
+          "title": "정산 대상자가 아닙니다",
+          "description": "송금하지 않아도 돼요."
+        }
       }
     },
     "drawer": {
@@ -168,6 +174,18 @@
         "route_info": "노선 정보",
         "departure_date": "출발 날짜",
         "departure_time": "출발 시간"
+      },
+      "accounting": {
+        "amount": "정산 금액",
+        "status_title": "정산 현황",
+        "status": {
+          "before": "정산 중",
+          "payer": "결제자",
+          "done": "정산 완료",
+          "not_requested": "미요청"
+        },
+        "edit_payer_only": "정산 현황은 결제자만 수정할 수 있어요",
+        "save": "저장"
       },
       "members": {
         "my": "my",
