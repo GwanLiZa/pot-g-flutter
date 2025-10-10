@@ -158,7 +158,12 @@
         "taxi_call": "Taxi Call",
         "accounting_request": "Accounting Request",
         "accounting_info_check": "Accounting Info Check",
-        "accounting_process": "Accounting Process"
+        "accounting_process": "Accounting Process",
+        "unknown": "Unknown"
+      },
+      "unknown_action_alert": {
+        "title": "Unknown Action",
+        "description": "This action is not available. Please update the app."
       }
     },
     "drawer": {
@@ -217,9 +222,6 @@
       }
     },
     "accounting": {
-      "host_only": {
-        "description": "This feature is only available for hosts."
-      },
       "dutch": {
         "title": "Dutch Pay",
         "fields": {
@@ -242,6 +244,24 @@
           }
         },
         "action": "Request Dutch Pay"
+      }
+    },
+    "taxi_call": {
+      "title": "Call Taxi",
+      "description": "Call Taxi for $route speedily",
+      "actions": {
+        "kakao": "Call with KakaoT",
+        "uber": "Call with Uber Taxi",
+        "tmoney": "Call with Tmoney Onda"
+      }
+    },
+    "send_money": {
+      "title": "Send Money",
+      "description": "send $n won to payment account $account",
+      "actions": {
+        "toss": "Send with Toss",
+        "kakao": "Send with KakaoPay",
+        "clipboard": "Copy to Clipboard"
       }
     }
   }
