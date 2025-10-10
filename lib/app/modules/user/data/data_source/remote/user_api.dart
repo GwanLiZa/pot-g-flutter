@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:pot_g/app/modules/core/data/dio/pot_dio.dart';
+import 'package:pot_g/app/modules/user/data/models/push_setting_model.dart';
 import 'package:pot_g/app/modules/user/data/models/self_user_model.dart';
 import 'package:retrofit/retrofit.dart';
 
@@ -14,4 +15,7 @@ abstract class UserApi {
 
   @GET('info')
   Future<SelfUserModel> getUser();
+
+  @POST('push')
+  Future<PushSettingModel> updatePush(@Body() PushSettingModel body);
 }
