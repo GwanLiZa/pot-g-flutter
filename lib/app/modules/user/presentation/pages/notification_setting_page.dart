@@ -1,7 +1,12 @@
 import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pot_g/app/di/locator.dart';
 import 'package:pot_g/app/modules/common/presentation/widgets/pot_app_bar.dart';
 import 'package:pot_g/app/modules/common/presentation/widgets/pot_toggle.dart';
+import 'package:pot_g/app/modules/user/data/models/push_setting_model.dart';
+import 'package:pot_g/app/modules/user/domain/entities/push_setting_entity.dart';
+import 'package:pot_g/app/modules/user/presentation/blocs/push_setting_bloc.dart';
 import 'package:pot_g/app/values/text_styles.dart';
 import 'package:pot_g/gen/strings.g.dart';
 
@@ -11,42 +16,111 @@ class NotificationSettingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => sl<PushSettingBloc>()..add(const PushSettingEvent.load()),
+      child: const _NotificationSettingPage(),
+    );
+  }
+}
+
+class _NotificationSettingPage extends StatelessWidget {
+  const _NotificationSettingPage();
+
+  @override
+  Widget build(BuildContext context) {
+    context.read<PushSettingBloc>().add(const PushSettingEvent.load());
+
     return Scaffold(
       appBar: PotAppBar(
         title: Text(context.t.profile.notification_settings.title),
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _NotificationOption(
-              title: context.t.profile.notification_settings.all.title,
-              description:
-                  context.t.profile.notification_settings.all.description,
-              value: true,
-              onChanged: (value) {},
-            ),
-            const SizedBox(height: 16),
-            _NotificationOption(
-              title: context.t.profile.notification_settings.chat.title,
-              description:
-                  context.t.profile.notification_settings.chat.description,
-              value: true,
-              onChanged: (value) {},
-            ),
-            const SizedBox(height: 16),
-            _NotificationOption(
-              title: context.t.profile.notification_settings.room.title,
-              description:
-                  context.t.profile.notification_settings.room.description,
-              value: true,
-              onChanged: (value) {},
-            ),
-          ],
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+        child: BlocBuilder<PushSettingBloc, PushSettingState>(
+          builder: (context, state) {
+            return state.map(
+              initial: (_) => const Center(child: CircularProgressIndicator()),
+              loading: (_) => const Center(child: CircularProgressIndicator()),
+              loaded: (s) {
+                final pushSetting = s.pushSetting;
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _NotificationOption(
+                      title: context.t.profile.notification_settings.all.title,
+                      description:
+                          context
+                              .t
+                              .profile
+                              .notification_settings
+                              .all
+                              .description,
+                      value: pushSetting.anyPush,
+                      onChanged: (value) {
+                        final updated = PushSettingModel(
+                          anyPush: value,
+                          chatPush: pushSetting.chatPush,
+                          potInOutPush: pushSetting.potInOutPush,
+                          marketingPush: pushSetting.marketingPush,
+                        );
+                        _updatePush(context, updated);
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    _NotificationOption(
+                      title: context.t.profile.notification_settings.chat.title,
+                      description:
+                          context
+                              .t
+                              .profile
+                              .notification_settings
+                              .chat
+                              .description,
+                      value: pushSetting.chatPush,
+                      onChanged: (value) {
+                        final updated = PushSettingModel(
+                          anyPush: pushSetting.anyPush,
+                          chatPush: value,
+                          potInOutPush: pushSetting.potInOutPush,
+                          marketingPush: pushSetting.marketingPush,
+                        );
+                        _updatePush(context, updated);
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    _NotificationOption(
+                      title: context.t.profile.notification_settings.room.title,
+                      description:
+                          context
+                              .t
+                              .profile
+                              .notification_settings
+                              .room
+                              .description,
+                      value: pushSetting.potInOutPush,
+                      onChanged: (value) {
+                        final updated = PushSettingModel(
+                          anyPush: pushSetting.anyPush,
+                          chatPush: pushSetting.chatPush,
+                          potInOutPush: value,
+                          marketingPush: pushSetting.marketingPush,
+                        );
+                        _updatePush(context, updated);
+                      },
+                    ),
+                  ],
+                );
+              },
+              error: (e) => Center(child: Text('Error: ${e.message}')),
+            );
+          },
         ),
       ),
     );
+  }
+
+  void _updatePush(BuildContext context, PushSettingEntity updated) {
+    context.read<PushSettingBloc>().add(PushSettingEvent.update(updated));
   }
 }
 
