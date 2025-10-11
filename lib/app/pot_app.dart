@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:pot_g/app/di/locator.dart';
 import 'package:pot_g/app/modules/auth/presentation/bloc/auth_bloc.dart';
+import 'package:pot_g/app/modules/core/presentation/bloc/link_bloc.dart';
+import 'package:pot_g/app/modules/core/presentation/bloc/messaging_bloc.dart';
 import 'package:pot_g/app/modules/chat/presentation/bloc/pot_detail_bloc.dart';
 import 'package:pot_g/app/modules/common/presentation/utils/log.dart';
 import 'package:pot_g/app/modules/common/presentation/utils/log_observer.dart';
@@ -57,6 +59,15 @@ class _Providers extends StatelessWidget {
         ),
         BlocProvider(create: (_) => sl<SocketAuthBloc>()),
         BlocProvider(
+          lazy: false,
+          create: (_) => sl<MessagingBloc>()..add(const MessagingEvent.init()),
+        ),
+        BlocProvider(
+          lazy: false,
+          create: (_) => sl<LinkBloc>()..add(const LinkEvent.init()),
+        ),
+        BlocProvider(
+          lazy: false,
           create:
               (_) =>
                   sl<PotDetailBloc>()..add(const PotDetailEvent.loadMyPots()),
@@ -82,6 +93,28 @@ class _Providers extends StatelessWidget {
                 context.read<SocketAuthBloc>().add(event);
               }
             },
+          ),
+          BlocListener<AuthBloc, AuthState>(
+            listenWhen:
+                (previous, current) =>
+                    current.mapOrNull(
+                      authenticated: (_) => true,
+                      unauthenticated: (_) => true,
+                    ) ??
+                    false,
+            listener:
+                (context, state) => context.read<MessagingBloc>().add(
+                  const MessagingEvent.refresh(),
+                ),
+          ),
+          BlocListener<LinkBloc, LinkState>(
+            listener:
+                (context, state) => state.mapOrNull(
+                  loaded:
+                      (s) => WidgetsBinding.instance.addPostFrameCallback((_) {
+                        _appRouter.pushPath(s.link);
+                      }),
+                ),
           ),
         ],
         child: child,

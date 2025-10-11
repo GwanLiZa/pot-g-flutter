@@ -1,0 +1,19 @@
+import 'package:injectable/injectable.dart';
+import 'package:pot_g/app/modules/core/data/repositories/app_links_link_repository.dart';
+import 'package:pot_g/app/modules/core/data/repositories/fcm_messaging_repository.dart';
+import 'package:pot_g/app/modules/core/domain/repositories/link_repository.dart';
+import 'package:rxdart/rxdart.dart';
+
+@LazySingleton(as: LinkRepository)
+class MultipleLinkRepository implements LinkRepository {
+  final FcmMessagingRepository _fcmRepository;
+  final AppLinksLinkRepository _uniLinkLinkRepository;
+
+  MultipleLinkRepository(this._fcmRepository, this._uniLinkLinkRepository);
+
+  @override
+  Stream<String> getLinkStream() => MergeStream([
+    _fcmRepository.getLinkStream(),
+    _uniLinkLinkRepository.getLinkStream(),
+  ]);
+}
