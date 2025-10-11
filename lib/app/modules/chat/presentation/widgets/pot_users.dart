@@ -7,10 +7,10 @@ import 'package:pot_g/app/modules/chat/domain/entities/pot_user_entity.dart';
 import 'package:pot_g/app/modules/chat/presentation/bloc/pot_info_bloc.dart';
 import 'package:pot_g/app/modules/chat/presentation/extensions/pot_user_extension.dart';
 import 'package:pot_g/app/modules/chat/presentation/widgets/pot_user.dart';
+import 'package:pot_g/app/modules/common/presentation/utils/log.dart';
 import 'package:pot_g/app/modules/common/presentation/widgets/general_dialog.dart';
 import 'package:pot_g/app/values/palette.dart';
 import 'package:pot_g/app/values/text_styles.dart';
-import 'package:pot_g/gen/assets.gen.dart';
 import 'package:pot_g/gen/strings.g.dart';
 
 class PotUsers extends StatelessWidget {
@@ -44,30 +44,33 @@ class PotUsers extends StatelessWidget {
             if (index != 0) const SizedBox(height: 8),
             PotUser(
               user: e,
-              onKick: me?.isHost ?? false ? () => _kickUser(context, e) : null,
+              onKick:
+                  me?.isHost ?? false
+                      ? () {
+                        L.c(
+                          'kick',
+                          properties: {'userId': e.id, 'roomId': pot.id},
+                        );
+                        _kickUser(context, e);
+                      }
+                      : null,
               pot: pot,
             ),
           ],
-        ),
-        Container(
-          padding: EdgeInsets.symmetric(vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                context.t.chat_room.drawer.members.invite,
-                style: TextStyles.description.copyWith(color: Palette.grey),
-              ),
-              SizedBox(width: 6),
-              Assets.icons.add.svg(),
-            ],
-          ),
         ),
       ],
     );
   }
 
   Future<void> _kickUser(BuildContext context, PotUserEntity user) async {
+    if (pot.departureTime != null) {
+      showOkAlertDialog(
+        context: context,
+        title: context.t.chat_room.drawer.members.departure_confirmed,
+        message: context.t.chat_room.drawer.members.kick.departure_confirmed,
+      );
+      return;
+    }
     final result = await showGeneralOkCancelAdaptiveDialog(
       title: context.t.chat_room.drawer.members.kick.confirm.title,
       child: Text.rich(

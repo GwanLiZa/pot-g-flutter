@@ -2,8 +2,11 @@ import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:pot_g/app/modules/chat/data/data_sources/remote/chat_accounting_api.dart';
 import 'package:pot_g/app/modules/chat/data/data_sources/remote/chat_pot_api.dart';
+import 'package:pot_g/app/modules/chat/data/models/accounting_confirm_request_model.dart';
 import 'package:pot_g/app/modules/chat/data/models/accounting_request_request_model.dart';
 import 'package:pot_g/app/modules/chat/data/models/accounting_request_response_model.dart';
+import 'package:pot_g/app/modules/chat/data/models/accounting_result_model.dart';
+import 'package:pot_g/app/modules/chat/domain/exceptions/accounting_confirm_exception.dart';
 import 'package:pot_g/app/modules/chat/data/models/confirm_departure_time_request_model.dart';
 import 'package:pot_g/app/modules/chat/data/models/confirm_departure_time_response_model.dart';
 import 'package:pot_g/app/modules/chat/data/models/kick_user_response_model.dart';
@@ -76,7 +79,9 @@ class WebsocketPotInfoRepository implements PotInfoRepository {
           throw DepartureTimeException.potAlreadyClosed();
       }
     } on DioException catch (e) {
-      throw DepartureTimeException.networkError(e.error.toString());
+      throw DepartureTimeException.networkError(
+        e.message ?? e.error.toString(),
+      );
     }
   }
 
@@ -103,7 +108,7 @@ class WebsocketPotInfoRepository implements PotInfoRepository {
           throw KickUserException.potAlreadyClosed();
       }
     } on DioException catch (e) {
-      throw KickUserException.networkError(e.error.toString());
+      throw KickUserException.networkError(e.message ?? e.error.toString());
     }
   }
 
@@ -126,7 +131,7 @@ class WebsocketPotInfoRepository implements PotInfoRepository {
           throw LeavePotException.potAlreadyClosed();
       }
     } on DioException catch (e) {
-      throw LeavePotException.networkError(e.error.toString());
+      throw LeavePotException.networkError(e.message ?? e.error.toString());
     }
   }
 
@@ -167,7 +172,40 @@ class WebsocketPotInfoRepository implements PotInfoRepository {
           throw AccountingRequestException.potAlreadyClosed();
       }
     } on DioException catch (e) {
-      throw AccountingRequestException.networkError(e.error.toString());
+      throw AccountingRequestException.networkError(
+        e.message ?? e.error.toString(),
+      );
+    }
+  }
+
+  @override
+  Future<void> confirmAccounting(
+    PotInfoEntity pot,
+    List<AccountingResultModel> accountingResults,
+  ) async {
+    try {
+      final result = await _accountingApi.confirmAccounting(
+        pot.id,
+        AccountingConfirmRequestModel(accountingResults: accountingResults),
+      );
+      switch (result.result) {
+        case 'OK':
+          return;
+        case 'NotYetRequested':
+          throw AccountingConfirmException.notYetRequested();
+        case 'NotAccountingRequester':
+          throw AccountingConfirmException.notAccountingRequester();
+        case 'PotNotExist':
+          throw AccountingConfirmException.potNotExist();
+        case 'PotAlreadyClosed':
+          throw AccountingConfirmException.potAlreadyClosed();
+        default:
+          throw AccountingConfirmException.networkError(result.result);
+      }
+    } on DioException catch (e) {
+      throw AccountingConfirmException.networkError(
+        e.message ?? e.error.toString(),
+      );
     }
   }
 }

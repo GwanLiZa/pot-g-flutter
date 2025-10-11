@@ -14,7 +14,4 @@ abstract class PotListApi {
 
   @GET('list')
   Future<PotListModel> getList();
-
-  @GET('route')
-  Future getRouteList();
 }

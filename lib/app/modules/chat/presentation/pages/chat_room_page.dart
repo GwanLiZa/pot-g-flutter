@@ -2,6 +2,7 @@ import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:pot_g/app/di/locator.dart';
@@ -13,16 +14,16 @@ import 'package:pot_g/app/modules/chat/presentation/bloc/chat_bloc.dart';
 import 'package:pot_g/app/modules/chat/presentation/bloc/pot_info_bloc.dart';
 import 'package:pot_g/app/modules/chat/presentation/extensions/pot_user_extension.dart';
 import 'package:pot_g/app/modules/chat/presentation/widgets/chat_bubble.dart';
+import 'package:pot_g/app/modules/chat/presentation/widgets/chat_room_drawer.dart';
 import 'package:pot_g/app/modules/chat/presentation/widgets/fofo_bubble.dart';
-import 'package:pot_g/app/modules/chat/presentation/widgets/pot_info.dart';
-import 'package:pot_g/app/modules/chat/presentation/widgets/pot_users.dart';
 import 'package:pot_g/app/modules/chat/presentation/widgets/system_message.dart';
 import 'package:pot_g/app/modules/common/presentation/extensions/toast.dart';
+import 'package:pot_g/app/modules/common/presentation/utils/log.dart';
+import 'package:pot_g/app/modules/common/presentation/utils/log_page.dart';
 import 'package:pot_g/app/modules/common/presentation/widgets/error_cover.dart';
 import 'package:pot_g/app/modules/common/presentation/widgets/general_dialog.dart';
 import 'package:pot_g/app/modules/common/presentation/widgets/pot_app_bar.dart';
 import 'package:pot_g/app/modules/common/presentation/widgets/pot_icon_button.dart';
-import 'package:pot_g/app/modules/common/presentation/widgets/pot_pressable.dart';
 import 'package:pot_g/app/modules/core/domain/entities/pot_detail_entity.dart';
 import 'package:pot_g/app/modules/core/domain/entities/route_entity.dart';
 import 'package:pot_g/app/router.gr.dart';
@@ -32,8 +33,11 @@ import 'package:pot_g/gen/assets.gen.dart';
 import 'package:pot_g/gen/strings.g.dart';
 
 @RoutePage()
-class ChatRoomPage extends StatelessWidget {
+class ChatRoomPage extends StatelessWidget with LogPageStateless {
   const ChatRoomPage({super.key, required this.pot});
+
+  @override
+  String get pageName => 'chatRoom';
 
   final PotDetailEntity pot;
 
@@ -55,6 +59,11 @@ class ChatRoomPage extends StatelessWidget {
             listener:
                 (context, state) =>
                     context.read<ChatBloc>().add(ChatInit(state.pot!)),
+          ),
+          BlocListener<ChatBloc, ChatState>(
+            listenWhen:
+                (prev, curr) => prev.error != curr.error && curr.error != null,
+            listener: (context, state) => context.showToast(state.error!),
           ),
         ],
         child: BlocBuilder<PotInfoBloc, PotInfoState>(
@@ -79,42 +88,16 @@ class _Layout extends StatelessWidget {
     if (state.error != null) return ErrorCover(message: state.error!);
     if (state.pot == null) return Scaffold();
     final pot = state.pot!;
+    final disabled = state.isArchived;
     return Scaffold(
+      backgroundColor: disabled ? Palette.borderGrey : null,
       appBar: PotAppBar(title: Text(pot.name)),
-      endDrawer: Drawer(
-        child: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                PotInfo(pot: pot),
-                const SizedBox(height: 20),
-                Container(height: 1, color: Palette.borderGrey2),
-                const SizedBox(height: 20),
-                PotUsers(pot: pot),
-                Spacer(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    PotPressable(
-                      onTap: () => _leave(context),
-                      child: Text(
-                        context.t.chat_room.drawer.actions.leave.action,
-                        style: TextStyles.caption.copyWith(
-                          color: Palette.grey,
-                          decoration: TextDecoration.underline,
-                          decorationColor: Palette.grey,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+      onEndDrawerChanged: (value) {
+        if (value) {
+          L.c('sidebar');
+        }
+      },
+      endDrawer: ChatRoomDrawer(pot: pot),
       body: Column(
         children: [
           Expanded(child: _ChatList(pot: pot)),
@@ -134,17 +117,6 @@ class _Layout extends StatelessWidget {
       ),
     );
   }
-
-  Future<void> _leave(BuildContext context) async {
-    final result = await showOkCancelAlertDialog(
-      context: context,
-      title: context.t.chat_room.drawer.actions.leave.confirm.title,
-      message: context.t.chat_room.drawer.actions.leave.confirm.description,
-    );
-    if (result != OkCancelResult.ok) return;
-    if (!context.mounted) return;
-    context.read<PotInfoBloc>().add(PotInfoEvent.leavePot());
-  }
 }
 
 class _AccountingButton extends StatelessWidget {
@@ -156,10 +128,6 @@ class _AccountingButton extends StatelessWidget {
     BuildContext context,
     PotInfoEntity pot,
   ) async {
-    if (!pot.meIsHost(context)) {
-      context.showToast(context.t.chat_room.accounting.host_only.description);
-      return;
-    }
     await AccountingRoute(pot: pot).push(context);
   }
 
@@ -197,6 +165,7 @@ class _SetDepartureTimeButton extends StatelessWidget {
       );
       return;
     }
+    L.v('setDepartureTime');
     DateTime date = DateTime.now();
     final result = await showGeneralOkCancelAdaptiveDialog(
       context: context,
@@ -213,6 +182,7 @@ class _SetDepartureTimeButton extends StatelessWidget {
     );
     if (result != OkCancelResult.ok) return;
     if (!context.mounted) return;
+    L.v('departureTimeConfirm', from: 'setDepartureTime');
     final result2 = await showOkCancelAlertDialog(
       context: context,
       title: context.t.chat_room.set_departure_time.confirm.title,
@@ -222,6 +192,7 @@ class _SetDepartureTimeButton extends StatelessWidget {
       ),
     );
     if (result2 != OkCancelResult.ok) return;
+    L.c('confirmDepartureTime', from: 'departureTimeConfirm');
     if (!context.mounted) return;
     context.read<PotInfoBloc>().add(PotInfoEvent.setDepartureTime(date));
   }
@@ -233,6 +204,7 @@ class _SetDepartureTimeButton extends StatelessWidget {
         colorFilter: ColorFilter.mode(Palette.grey, BlendMode.srcIn),
       ),
       onPressed: () async {
+        L.c('setDepartureTime');
         await setDepartureTime(context, pot);
       },
     );
@@ -330,7 +302,7 @@ class _ChatListState extends State<_ChatList> {
     );
   }
 
-  void _onAction(BuildContext context, FofoActionButtonType type) {
+  void _onAction(BuildContext context, FofoActionButtonType type) async {
     switch (type) {
       case FofoActionButtonType.departureConfirm:
         _SetDepartureTimeButton.setDepartureTime(context, widget.pot);
@@ -339,10 +311,89 @@ class _ChatListState extends State<_ChatList> {
         _AccountingButton.setAccounting(context, widget.pot);
         break;
       case FofoActionButtonType.accountingInfoCheck:
-      case FofoActionButtonType.accountingProcess:
+        Scaffold.of(context).openEndDrawer();
+        break;
       case FofoActionButtonType.taxiCall:
-        // TODO: implement these actions
+        // final result = await showAlertDialog(
+        //   context: context,
+        //   title: context.t.chat_room.taxi_call.title,
+        //   message: context.t.chat_room.taxi_call.description(
+        //     route: widget.pot.route.name,
+        //   ),
+        //   actions: [
+        //     AlertDialogAction(
+        //       key: 'kakao',
+        //       label: context.t.chat_room.taxi_call.actions.kakao,
+        //     ),
+        //     AlertDialogAction(
+        //       key: 'uber',
+        //       label: context.t.chat_room.taxi_call.actions.uber,
+        //     ),
+        //     AlertDialogAction(
+        //       key: 'tmoney',
+        //       label: context.t.chat_room.taxi_call.actions.tmoney,
+        //     ),
+        //   ],
+        // );
+        // if (result == null) return;
+        // switch (result) {
+        //   case 'kakao':
+        //     break;
+        //   case 'uber':
+        //     break;
+        //   case 'tmoney':
+        //     break;
+        // }
+        // TODO: implement this action
         context.showToast('service is not available yet');
+        break;
+      case FofoActionButtonType.accountingProcess:
+        final accountingInfo = widget.pot.accountingInfo;
+        if (!accountingInfo.accountingResults
+            .map((e) => e.userPk)
+            .contains(AuthBloc.userOf(context)?.id)) {
+          showOkAlertDialog(
+            context: context,
+            title: context.t.chat_room.fofo.accounting.not_requested.title,
+            message:
+                context.t.chat_room.fofo.accounting.not_requested.description,
+          );
+          return;
+        }
+        final bank = '${accountingInfo.bankName} ${accountingInfo.bankAccount}';
+        final result = await showAlertDialog(
+          context: context,
+          title: context.t.chat_room.send_money.title,
+          message: context.t.chat_room.send_money.description(
+            n: NumberFormat.decimalPattern().format(
+              accountingInfo.totalCost ?? 0,
+            ),
+            account: bank,
+          ),
+          actions: [
+            // AlertDialogAction(
+            //   key: 'toss',
+            //   label: context.t.chat_room.send_money.actions.toss,
+            // ),
+            // AlertDialogAction(
+            //   key: 'kakao',
+            //   label: context.t.chat_room.send_money.actions.kakao,
+            // ),
+            AlertDialogAction(
+              key: 'clipboard',
+              label: context.t.chat_room.send_money.actions.clipboard,
+            ),
+          ],
+        );
+        if (result == null) return;
+        switch (result) {
+          case 'toss':
+          case 'kakao':
+            break;
+          case 'clipboard':
+            Clipboard.setData(ClipboardData(text: bank));
+            break;
+        }
         break;
     }
   }
@@ -375,12 +426,16 @@ class _ChatInputState extends State<_ChatInput> {
 
   @override
   Widget build(BuildContext context) {
+    final disabled = context.select<PotInfoBloc, bool>(
+      (bloc) => bloc.state.isArchived,
+    );
     return Container(
       padding: EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
           Expanded(
             child: TextField(
+              enabled: !disabled,
               controller: _controller,
               style: TextStyles.description.copyWith(
                 height: 19 / 16,
@@ -412,6 +467,7 @@ class _ChatInputState extends State<_ChatInput> {
               ),
             ),
             onPressed: () {
+              L.c('sendMessage');
               context.read<ChatBloc>().add(ChatSendChat(_controller.text));
               _controller.clear();
             },

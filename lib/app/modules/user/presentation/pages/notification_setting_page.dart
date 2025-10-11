@@ -2,6 +2,8 @@ import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pot_g/app/di/locator.dart';
+import 'package:pot_g/app/modules/common/presentation/utils/log.dart';
+import 'package:pot_g/app/modules/common/presentation/utils/log_page.dart';
 import 'package:pot_g/app/modules/common/presentation/widgets/pot_app_bar.dart';
 import 'package:pot_g/app/modules/common/presentation/widgets/pot_toggle.dart';
 import 'package:pot_g/app/modules/user/data/models/push_setting_model.dart';
@@ -11,8 +13,11 @@ import 'package:pot_g/app/values/text_styles.dart';
 import 'package:pot_g/gen/strings.g.dart';
 
 @RoutePage()
-class NotificationSettingPage extends StatelessWidget {
+class NotificationSettingPage extends StatelessWidget with LogPageStateless {
   const NotificationSettingPage({super.key});
+
+  @override
+  String get pageName => 'notificationSetting';
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +62,11 @@ class _NotificationSettingPage extends StatelessWidget {
                               .description,
                       value: pushSetting.anyPush,
                       onChanged: (value) {
+                        L.c(
+                          'allNotification',
+                           from: 'notificationSetting',
+                           properties: {'value': value ? 'on' : 'off'},
+                        );
                         final updated = PushSettingModel(
                           anyPush: value,
                           chatPush: pushSetting.chatPush,
@@ -78,6 +88,11 @@ class _NotificationSettingPage extends StatelessWidget {
                               .description,
                       value: pushSetting.chatPush,
                       onChanged: (value) {
+                        L.c(
+                            'chattingNotification',
+                             from: 'notificationSetting',
+                              properties: {'value': value ? 'on' : 'off'},
+                        );
                         final updated = PushSettingModel(
                           anyPush: pushSetting.anyPush,
                           chatPush: value,
@@ -99,6 +114,11 @@ class _NotificationSettingPage extends StatelessWidget {
                               .description,
                       value: pushSetting.potInOutPush,
                       onChanged: (value) {
+                        L.c(
+                          'roomNotification',
+                          from: 'notificationSetting',
+                          properties: {'value': value ? 'on' : 'off'},
+                        );
                         final updated = PushSettingModel(
                           anyPush: pushSetting.anyPush,
                           chatPush: pushSetting.chatPush,
