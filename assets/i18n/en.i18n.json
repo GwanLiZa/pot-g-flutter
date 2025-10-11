@@ -6,8 +6,7 @@
   },
   "unauthorized": {
     "title": "Login to continue",
-    "description": "To access your information, you need to login.\nWould you like to login?",
-    "button": "Login"
+    "description": "To access your information, you need to login.\nWould you like to login?"
   },
   "profile": {
     "menu_title": "My Profile",
@@ -83,7 +82,14 @@
         "all": "All Routes"
       }
     },
-    "reached_all": "You have reached all pots"
+    "reached_all": "You have reached all pots",
+    "enter": {
+      "title": "Do you want to enter the pot?",
+      "route": "Route",
+      "date": "Date",
+      "departure_time": "Time",
+      "passengers": "Passengers List"
+    }
   },
   "create": {
     "menu_title": "Create",
@@ -152,7 +158,18 @@
         "taxi_call": "Taxi Call",
         "accounting_request": "Accounting Request",
         "accounting_info_check": "Accounting Info Check",
-        "accounting_process": "Accounting Process"
+        "accounting_process": "Accounting Process",
+        "unknown": "Unknown"
+      },
+      "unknown_action_alert": {
+        "title": "Unknown Action",
+        "description": "This action is not available. Please update the app."
+      },
+      "accounting": {
+        "not_requested": {
+          "title": "Not Requested",
+          "description": "You don't have to send money"
+        }
       }
     },
     "drawer": {
@@ -161,17 +178,38 @@
         "departure_date": "Departure Date",
         "departure_time": "Departure Time"
       },
+      "accounting": {
+        "amount": "Accounting Amount",
+        "status_title": "Accounting Status",
+        "status": {
+          "before": "Accounting",
+          "payer": "Payer",
+          "done": "Done",
+          "not_requested": "Not Requested"
+        },
+        "edit_payer_only": "Accounting status can only be edited by the payer",
+        "save": "Save"
+      },
       "members": {
         "my": "my",
         "passenger": "passengers",
+        "departure_confirmed": "Already confirmed pot",
         "kick": {
           "action": "Kick",
           "confirm": {
             "title": "Kick Passenger?",
             "description(rich)": "Are you sure you want to kick $user?\nIf the kick is unreasonable, you may be reported."
-          }
+          },
+          "departure_confirmed": "After the departure time is confirmed, you cannot kick."
         },
-        "invite": "Invite",
+        "invite": {
+          "action": "Invite",
+          "success": {
+            "title": "Invite Link Copied",
+            "description": "The invite link has been copied.\nPlease send the link to your friend."
+          },
+          "departure_confirmed": "After the departure time is confirmed, you cannot invite."
+        },
         "host": "Host"
       },
       "actions": {
@@ -180,7 +218,8 @@
           "confirm": {
             "title": "Leave the pot?",
             "description": "You can leave freely before the departure time is confirmed. Do you want to leave?"
-          }
+          },
+          "departure_confirmed": "After the departure time is confirmed, you cannot leave."
         },
         "report": "Report"
       }
@@ -201,9 +240,6 @@
       }
     },
     "accounting": {
-      "host_only": {
-        "description": "This feature is only available for hosts."
-      },
       "dutch": {
         "title": "Dutch Pay",
         "fields": {
@@ -226,6 +262,24 @@
           }
         },
         "action": "Request Dutch Pay"
+      }
+    },
+    "taxi_call": {
+      "title": "Call Taxi",
+      "description": "Call Taxi for $route speedily",
+      "actions": {
+        "kakao": "Call with KakaoT",
+        "uber": "Call with Uber Taxi",
+        "tmoney": "Call with Tmoney Onda"
+      }
+    },
+    "send_money": {
+      "title": "Send Money",
+      "description": "send $n won to payment account $account",
+      "actions": {
+        "toss": "Send with Toss",
+        "kakao": "Send with KakaoPay",
+        "clipboard": "Copy to Clipboard"
       }
     }
   }

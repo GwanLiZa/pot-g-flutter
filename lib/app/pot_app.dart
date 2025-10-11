@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,6 +7,9 @@ import 'package:pot_g/app/di/locator.dart';
 import 'package:pot_g/app/modules/auth/presentation/bloc/auth_bloc.dart';
 import 'package:pot_g/app/modules/core/presentation/bloc/link_bloc.dart';
 import 'package:pot_g/app/modules/core/presentation/bloc/messaging_bloc.dart';
+import 'package:pot_g/app/modules/chat/presentation/bloc/pot_detail_bloc.dart';
+import 'package:pot_g/app/modules/common/presentation/utils/log.dart';
+import 'package:pot_g/app/modules/common/presentation/utils/log_observer.dart';
 import 'package:pot_g/app/modules/core/presentation/bloc/route_list_bloc.dart';
 import 'package:pot_g/app/modules/socket/presentation/bloc/socket_auth_bloc.dart';
 import 'package:pot_g/app/router.dart';
@@ -26,7 +30,9 @@ class PotApp extends StatelessWidget {
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: MaterialApp.router(
           theme: PotTheme.theme,
-          routerConfig: _appRouter.config(),
+          routerConfig: _appRouter.config(
+            navigatorObservers: () => [AutoRouteObserver(), LogObserver()],
+          ),
           locale: TranslationProvider.of(context).flutterLocale,
           supportedLocales: AppLocaleUtils.supportedLocales,
           localizationsDelegates: GlobalMaterialLocalizations.delegates,
@@ -60,11 +66,24 @@ class _Providers extends StatelessWidget {
           lazy: false,
           create: (_) => sl<LinkBloc>()..add(const LinkEvent.init()),
         ),
+        BlocProvider(
+          lazy: false,
+          create:
+              (_) =>
+                  sl<PotDetailBloc>()..add(const PotDetailEvent.loadMyPots()),
+        ),
       ],
       child: MultiBlocListener(
         listeners: [
           BlocListener<AuthBloc, AuthState>(
             listener: (context, state) {
+              L.setUserId(state.user?.id);
+              if (state.user != null) {
+                L.setUserProperties({
+                  'email': state.user!.email,
+                  'name': state.user!.name,
+                });
+              }
               final event = switch (state) {
                 Authenticated() => SocketAuthEvent.connect(),
                 Unauthenticated() => SocketAuthEvent.disconnect(),

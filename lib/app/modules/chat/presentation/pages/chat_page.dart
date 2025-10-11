@@ -2,17 +2,11 @@ import 'package:auto_route/auto_route.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pot_g/app/di/locator.dart';
-import 'package:pot_g/app/modules/chat/domain/enums/pot_status.dart';
-import 'package:pot_g/app/modules/chat/domain/repositories/pot_detail_repository.dart';
 import 'package:pot_g/app/modules/chat/presentation/bloc/pot_detail_bloc.dart';
 import 'package:pot_g/app/modules/chat/presentation/widgets/chat_list_item.dart';
+import 'package:pot_g/app/modules/common/presentation/utils/log.dart';
 import 'package:pot_g/app/modules/common/presentation/widgets/pot_app_bar.dart';
-import 'package:pot_g/app/modules/common/presentation/widgets/pot_pressable.dart';
 import 'package:pot_g/app/modules/core/data/models/pot_detail_model.dart';
-import 'package:pot_g/app/modules/core/data/models/route_model.dart';
-import 'package:pot_g/app/modules/core/data/models/stop_model.dart';
-import 'package:pot_g/app/router.gr.dart';
 import 'package:pot_g/app/values/palette.dart';
 import 'package:pot_g/gen/assets.gen.dart';
 import 'package:pot_g/gen/strings.g.dart';
@@ -23,33 +17,24 @@ class ChatPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<PotDetailBloc>(
-      create:
-          (context) =>
-              sl<PotDetailBloc>()..add(const PotDetailEvent.loadMyPots()),
-      child: Scaffold(
-        appBar: PotAppBar(title: Text(context.t.chat.title)),
-        body: BlocBuilder<PotDetailBloc, PotDetailState>(
-          builder: (context, state) {
-            if (state.isLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
+    return Scaffold(
+      backgroundColor: Palette.lightGrey,
+      appBar: PotAppBar(title: Text(context.t.chat.title)),
+      body: BlocBuilder<PotDetailBloc, PotDetailState>(
+        builder: (context, state) {
+          if (state.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-            if (state.error != null) {
-              return Center(child: Text('Error: ${state.error}'));
-            }
+          if (state.error != null) {
+            return Center(child: Text('Error: ${state.error}'));
+          }
 
-            return Container(
-              color: Palette.lightGrey,
-              child: SafeArea(
-                child: _ChatListView(
-                  activePots: state.activePotList,
-                  closedPots: state.archivedPotList,
-                ),
-              ),
-            );
-          },
-        ),
+          return _ChatListView(
+            activePots: state.activePotList,
+            closedPots: state.archivedPotList,
+          );
+        },
       ),
     );
   }
@@ -72,12 +57,8 @@ class _ChatListViewState extends State<_ChatListView> {
     final hasActivePots = widget.activePots.isNotEmpty;
 
     return SingleChildScrollView(
-      padding: EdgeInsets.fromLTRB(
-        16,
-        20,
-        16,
-        MediaQuery.of(context).size.height * 0.3,
-      ),
+      clipBehavior: Clip.none,
+      padding: EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -85,10 +66,7 @@ class _ChatListViewState extends State<_ChatListView> {
             ...widget.activePots.expandIndexed(
               (index, e) => [
                 if (index != 0) const SizedBox(height: 16),
-                PotPressable(
-                  onTap: () => ChatRoomRoute(pot: e).push(context),
-                  child: ChatListItem(pot: e),
-                ),
+                ChatListItem(pot: e),
               ],
             ),
             const SizedBox(height: 32),
@@ -122,7 +100,14 @@ class _ChatListViewState extends State<_ChatListView> {
           ],
 
           GestureDetector(
-            onTap: () => setState(() => _showClosed = !_showClosed),
+            onTap:
+                () => setState(() {
+                  _showClosed = !_showClosed;
+                  L.c(
+                    'expiredRoom',
+                    properties: {'toggle': _showClosed ? 'show' : 'hide'},
+                  );
+                }),
             behavior: HitTestBehavior.opaque,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
@@ -146,32 +131,23 @@ class _ChatListViewState extends State<_ChatListView> {
             ),
           ),
 
-          AnimatedSwitcher(
+          AnimatedSize(
             duration: const Duration(milliseconds: 200),
-            transitionBuilder: (child, animation) {
-              return SizeTransition(
-                sizeFactor: animation,
-                axis: Axis.vertical,
-                child: child,
-              );
-            },
+            alignment: Alignment.topCenter,
+            curve: Curves.easeInOut,
             child:
                 _showClosed
                     ? Column(
-                      key: const ValueKey('closedList'),
                       children: [
                         ...widget.closedPots.expand(
                           (e) => [
                             const SizedBox(height: 16),
-                            PotPressable(
-                              onTap: () => ChatRoomRoute(pot: e).push(context),
-                              child: ChatListItem(pot: e),
-                            ),
+                            ChatListItem(pot: e),
                           ],
                         ),
                       ],
                     )
-                    : const SizedBox.shrink(key: ValueKey('empty')),
+                    : const SizedBox(width: double.infinity, height: 0),
           ),
         ],
       ),
