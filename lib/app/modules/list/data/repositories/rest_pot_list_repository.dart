@@ -15,7 +15,20 @@ class RestPotListRepository implements PotListRepository {
     DateTime? date,
     RouteEntity? route,
   }) async {
-    final potListModel = await _api.getList();
+    final potListModel = await _api.getList(
+      routeId: route?.id,
+      startsAt:
+          date != null
+              ? DateTime(date.year, date.month, date.day, 0, 0, 0, 0)
+              : null,
+      endsAt:
+          date != null
+              ? DateTime(date.year, date.month, date.day, 23, 59, 59, 999)
+              : null,
+      offset: 0,
+      limit: 10,
+    );
+
     return potListModel.list;
   }
 }

@@ -9,7 +9,6 @@ import 'package:pot_g/app/modules/core/data/data_sources/fcm_api.dart';
 import 'package:pot_g/app/modules/core/data/models/fcm_request_model.dart';
 import 'package:pot_g/app/modules/core/domain/repositories/link_repository.dart';
 import 'package:pot_g/app/modules/core/domain/repositories/messaging_repository.dart';
-import 'package:pot_g/gen/strings.g.dart';
 import 'package:rxdart/rxdart.dart';
 //import 'package:package_info_plus/package_info_plus.dart';
 
