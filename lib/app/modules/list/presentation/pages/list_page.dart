@@ -40,7 +40,7 @@ class ListPage extends StatelessWidget {
                   prev.date != curr.date || prev.route != curr.route,
           listener:
               (context, state) => context.read<PotListBloc>().add(
-                PotListEvent.search(date: state.date),
+                PotListEvent.search(date: state.date, route: state.route),
               ),
           child: _Layout(),
         ),

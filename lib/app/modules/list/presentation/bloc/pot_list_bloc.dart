@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:pot_g/app/modules/core/domain/entities/pot_summary_entity.dart';
+import 'package:pot_g/app/modules/core/domain/entities/route_entity.dart';
 import 'package:pot_g/app/modules/core/domain/repositories/pot_list_repository.dart';
 
 part 'pot_list_bloc.freezed.dart';
@@ -17,7 +18,10 @@ class PotListBloc extends Bloc<PotListEvent, PotListState> {
   Future<void> _onSearch(_Search event, Emitter<PotListState> emit) async {
     emit(state.copyWith(isLoading: true));
     try {
-      final pots = await _repository.getPotList(date: event.date);
+      final pots = await _repository.getPotList(
+        date: event.date,
+        route: event.route,
+      );
       emit(state.copyWith(pots: pots, isLoading: false));
     } catch (e) {
       emit(state.copyWith(error: e.toString(), isLoading: false));
@@ -27,7 +31,8 @@ class PotListBloc extends Bloc<PotListEvent, PotListState> {
 
 @freezed
 sealed class PotListEvent with _$PotListEvent {
-  const factory PotListEvent.search({DateTime? date}) = _Search;
+  const factory PotListEvent.search({DateTime? date, RouteEntity? route}) =
+      _Search;
 }
 
 @freezed
